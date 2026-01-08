@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tonmoy Barua</title>
+    <link rel="icon" href="favicon-tonmoy.png" >
+    <link rel="apple-touch-icon" href="apple-touch-tonmoy.png" >
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["ui-sans-serif", "system-ui", "Inter", "Segoe UI", "Arial"],
+              mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+            },
+            boxShadow: {
+              glow: "0 0 0 1px rgba(255,255,255,.10), 0 24px 70px rgba(0,0,0,.45)",
+            },
+            keyframes: {
+              floaty: { "0%,100%": { transform: "translateY(0px)" }, "50%": { transform: "translateY(-10px)" } },
+              shimmer: { "0%": { backgroundPosition: "-200% 0" }, "100%": { backgroundPosition: "200% 0" } },
+              pop: { "0%": { transform: "scale(.98)", opacity: .4 }, "100%": { transform: "scale(1)", opacity: 1 } },
+            },
+            animation: {
+              floaty: "floaty 7s ease-in-out infinite",
+              shimmer: "shimmer 2.2s linear infinite",
+              pop: "pop .28s ease-out",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      :root { --grid: rgba(255,255,255,.06); }
+      .grid-bg{
+        background-image:
+          linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 48px 48px;
+        background-position: center;
+      }
+      .glass{ backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+      .noise::before{
+        content:""; position:absolute; inset:0;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay; pointer-events:none; border-radius: inherit;
+      }
+      .shine{
+        background: linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.18), rgba(255,255,255,.06));
+        background-size: 200% 100%;
+      }
+      .no-scrollbar::-webkit-scrollbar{ display:none; }
+      .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
+      .active-pill{ background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.16); color: white; }
+      .icon{ width: 18px; height: 18px; }
+      .icon-lg{ width: 22px; height: 22px; }
+      .chip{ transition: transform .15s ease, background .2s ease, border-color .2s ease; }
+      .chip:hover{ transform: translateY(-1px); }
+       section {
+            scroll-margin-top: 100px; /* adjust if navbar height changes */
+        }
+    </style>
+  </head>
+
+  <body class="font-display bg-slate-950 text-slate-100 selection:bg-fuchsia-400/30 selection:text-white">
+    <!-- Progress bar -->
+    <div id="progress" class="fixed top-0 left-0 h-[3px] w-0 bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-amber-300 z-[80]"></div>
+
+    <!-- Background -->
+    <div class="fixed inset-0 -z-10 grid-bg opacity-60"></div>
+    <div class="fixed inset-0 -z-10">
+      <div class="absolute -top-24 -left-24 w-[380px] h-[380px] bg-cyan-400/18 blur-3xl rounded-full animate-floaty"></div>
+      <div class="absolute top-1/3 -right-24 w-[420px] h-[420px] bg-fuchsia-400/16 blur-3xl rounded-full animate-floaty" style="animation-delay:-2s"></div>
+      <div class="absolute -bottom-24 left-1/3 w-[520px] h-[520px] bg-amber-300/12 blur-3xl rounded-full animate-floaty" style="animation-delay:-3.2s"></div>
+    </div>
+
+    <!-- Floating buttons -->
+    <div class="fixed bottom-6 right-6 z-[90] flex flex-col gap-3">
+      <!-- <button
+        id="themeBtn"
+        class="group w-11 h-11 rounded-2xl shadow-glow bg-white/8 hover:bg-white/12 border border-white/10 glass grid place-items-center transition"
+        aria-label="Toggle theme" title="Toggle theme"
+      >
+        <span id="themeIcon" class="text-lg group-hover:scale-110 transition">🌙</span>
+      </button> -->
+      <button
+        id="toTopBtn"
+        class="hidden group w-11 h-11 rounded-2xl shadow-glow bg-white/8 hover:bg-white/12 border border-white/10 glass grid place-items-center transition"
+        aria-label="Back to top" title="Back to top"
+      >
+        <i data-lucide="arrow-up" class="icon-lg"></i>
+      </button>
+    </div>
+
+    <!-- NAV -->
+    <header class="sticky top-0 z-[70]">
+      <div class="mx-auto max-w-6xl px-4">
+        <nav class="mt-4 rounded-3xl border border-white/10 bg-white/6 glass shadow-glow noise relative overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-3">
+            <a href="#home" class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-400/85 to-fuchsia-400/85 grid place-items-center shadow-glow">
+                <span class="font-mono text-sm text-slate-950 font-extrabold"><img class="w-full aspect-square object-cover rounded-[1.6rem] border border-white/10" src="favicon-tonmoy.png" alt="" srcset=""></span>
+              </div>
+              <div class="leading-tight">
+                <p class="text-sm text-slate-300">Tonmoy Barua</p>
+                <p class="text-base font-semibold tracking-tight">AI • Research • Software </p>
+              </div>
+            </a>
+
+            <!-- Desktop nav pills -->
+            <div class="hidden md:flex items-center gap-2">
+              <a class="navPill px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-slate-300 hover:text-white transition inline-flex items-center gap-2" href="#education">
+                <i data-lucide="graduation-cap" class="icon"></i><span>Education</span>
+              </a>
+              <a class="navPill px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-slate-300 hover:text-white transition inline-flex items-center gap-2" href="#experience">
+                <i data-lucide="briefcase" class="icon"></i><span>Experience</span>
+              </a>
+              <a class="navPill px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-slate-300 hover:text-white transition inline-flex items-center gap-2" href="#skills">
+                <i data-lucide="sparkles" class="icon"></i><span>Skills</span>
+              </a>
+              <a class="navPill px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-slate-300 hover:text-white transition inline-flex items-center gap-2" href="#projects">
+                <i data-lucide="layers" class="icon"></i><span>Projects</span>
+              </a>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button id="menuBtn" class="md:hidden w-11 h-11 rounded-2xl border border-white/10 bg-white/6 hover:bg-white/10 glass transition grid place-items-center" aria-label="Open menu">
+                <i data-lucide="menu" class="icon-lg"></i>
+              </button>
+              <a
+                href="https://www.linkedin.com/in/tonmoy-barua-/"
+                target="_blank"
+                class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-400/90 to-fuchsia-400/90 text-slate-950 font-semibold shadow-glow hover:opacity-95 transition"
+              >
+                <i data-lucide="linkedin" class="icon"></i><span>LinkedIn</span><span>↗</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Mobile menu -->
+          <div id="mobileMenu" class="hidden md:hidden border-t border-white/10 px-4 py-3">
+            <div class="grid gap-2">
+              <a class="navPill px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-slate-300 hover:text-white transition inline-flex items-center gap-2" href="#education">
+                <i data-lucide="graduation-cap" class="icon"></i><span>Education</span>
+              </a>
+              <a class="navPill px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-slate-300 hover:text-white transition inline-flex items-center gap-2" href="#experience">
+                <i data-lucide="briefcase" class="icon"></i><span>Experience</span>
+              </a>
+              <a class="navPill px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-slate-300 hover:text-white transition inline-flex items-center gap-2" href="#skills">
+                <i data-lucide="sparkles" class="icon"></i><span>Skills</span>
+              </a>
+              <a class="navPill px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-slate-300 hover:text-white transition inline-flex items-center gap-2" href="#projects">
+                <i data-lucide="layers" class="icon"></i><span>Projects</span>
+              </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="home" class="mx-auto max-w-6xl px-4">
+      <!-- TOP: photo + about -->
+      <section class="pt-10 md:pt-14">
+        <div class="rounded-3xl border border-white/10 bg-white/6 glass shadow-glow noise relative overflow-hidden p-6 md:p-8">
+          <div class="grid md:grid-cols-12 gap-6 items-center">
+            <!-- Square photo -->
+            <div class="md:col-span-5">
+              <div class="relative">
+                <div class="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-cyan-400/20 via-fuchsia-400/12 to-amber-300/10 blur-2xl"></div>
+
+                <div class="relative rounded-[2rem] border border-white/10 bg-slate-950/30 p-3">
+                  <img
+                    src="Tonmoy Barua.JPG"
+                    alt="Tonmoy Barua photo"
+                    class="w-full aspect-square object-cover rounded-[1.6rem] border border-white/10"
+                    onerror="this.style.display='none'; document.getElementById('photoFallback').style.display='grid';"
+                  />
+                  <div
+                    id="photoFallback"
+                    class="hidden w-full aspect-square rounded-[1.6rem] border border-white/10 bg-gradient-to-br from-cyan-400/25 via-fuchsia-400/15 to-amber-300/15 place-items-center"
+                  >
+                    <div class="text-center">
+                      <p class="text-5xl font-semibold">TB</p>
+                      <p class="mt-2 text-sm text-slate-300">Add photo as <span class="font-mono text-slate-200">profile.jpg</span></p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="absolute -bottom-3 left-5 px-3 py-1.5 rounded-2xl border border-white/10 bg-white/8 glass text-xs text-slate-200 shadow-glow inline-flex items-center gap-2">
+                  <i data-lucide="sparkles" class="icon"></i>
+                  <span>AI/ML • Research Software • Developer </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- About -->
+            <div class="md:col-span-7">
+              <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl border border-white/10 bg-white/5 text-sm text-slate-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,.8)]"></span>
+                <span>Open to collaboration • Building real-world systems</span>
+              </div>
+
+              <h1 class="mt-4 text-3xl md:text-5xl font-semibold tracking-tight">
+                Tonmoy Barua
+                <span class="block text-lg md:text-xl text-slate-300 mt-2">
+                  M.Sc (AI with Data Analytics — Advanced Practice) • Teesside University, UK
+                </span>
+              </h1>
+
+              <p class="mt-4 text-slate-300 leading-relaxed">
+                A researcher focused on Multimodal AI and Computational Biology, currently pursuing an M.Sc. in Artificial Intelligence with Data Analytics (with Advanced Practice) at Teesside University, UK, with a foundation in Computer Science and Engineering from Premier University, Bangladesh. My focus is on leveraging data and intelligent algorithms to build innovative, real-world solutions. Research interests include <span class="text-slate-100 font-medium">Multimodal AI</span> and
+                <span class="text-slate-100 font-medium">Computational Biology</span>, alongside building production-ready web systems.
+              </p>
+
+              <div class="mt-5 flex flex-wrap gap-3">
+                <a href="#projects" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/14 border border-white/10 transition">
+                  <i data-lucide="rocket" class="icon"></i>
+                  <span class="text-sm font-semibold">View Projects</span>
+                  <span>→</span>
+                </a>
+
+                <button id="copyEmailBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-400/90 to-fuchsia-400/90 text-slate-950 font-semibold shadow-glow hover:opacity-95 transition">
+                  <i data-lucide="copy" class="icon"></i>
+                  <span id="copyEmailText" class="text-sm">Copy email</span>
+                </button>
+
+                <a href="https://www.linkedin.com/in/tonmoy-barua-/" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-white/10 bg-white/8 hover:bg-white/12 glass transition">
+                  <i data-lucide="linkedin" class="icon"></i>
+                  <span class="text-sm font-semibold">LinkedIn</span><span>↗</span>
+                </a>
+              </div>
+
+              <div class="mt-6 flex flex-wrap gap-2 text-xs text-slate-300">
+                <span class="px-2.5 py-1 rounded-xl border border-white/10 bg-white/5 inline-flex items-center gap-1.5">
+                  <i data-lucide="cpu" class="icon"></i><span>AI/ML</span>
+                </span>
+                <span class="px-2.5 py-1 rounded-xl border border-white/10 bg-white/5 inline-flex items-center gap-1.5">
+                  <i data-lucide="code-2" class="icon"></i><span>Laravel / PHP</span>
+                </span>
+                
+                <span class="px-2.5 py-1 rounded-xl border border-white/10 bg-white/5 inline-flex items-center gap-1.5">
+                  <i data-lucide="database" class="icon"></i><span>MySQL</span>
+                </span>
+                <span class="px-2.5 py-1 rounded-xl border border-white/10 bg-white/5 inline-flex items-center gap-1.5">
+                  <i data-lucide="git-branch" class="icon"></i><span>Git</span>
+                </span>
+                <span class="px-2.5 py-1 rounded-xl border border-white/10 bg-white/5 inline-flex items-center gap-1.5">
+                  <i data-lucide="shield-check" class="icon"></i><span>APIs & Security</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Education -->
+      <section id="education" class="mt-10 md:mt-14">
+        <div class="rounded-3xl border border-white/10 bg-white/6 glass shadow-glow noise relative overflow-hidden p-6 md:p-8">
+          <div class="flex items-end justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl border border-white/10 bg-white/8 glass grid place-items-center">
+                <i data-lucide="graduation-cap" class="icon-lg"></i>
+              </div>
+              <div>
+                <h2 class="text-xl md:text-2xl font-semibold tracking-tight">Education</h2>
+                <p class="mt-1 text-sm text-slate-300">Clean cards — edit anytime.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 grid md:grid-cols-2 gap-4">
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-5 relative overflow-hidden">
+              <div class="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-cyan-400/16 blur-2xl"></div>
+              <div class="relative">
+                <p class="text-sm font-semibold inline-flex items-center gap-2">
+                  <i data-lucide="school" class="icon"></i> Teesside University — UK
+                </p>
+                <p class="mt-1 text-sm text-slate-300">M.Sc. Artificial Intelligence with Data Analytics (with Advanced Practice)</p>
+                <p class="mt-3 text-xs text-slate-400 inline-flex items-center gap-2">
+                  <i data-lucide="target" class="icon"></i> Focus: Multimodal AI • Computational Biology • Applied Systems
+                </p>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-5 relative overflow-hidden">
+              <div class="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-fuchsia-400/14 blur-2xl"></div>
+              <div class="relative">
+                <p class="text-sm font-semibold inline-flex items-center gap-2">
+                  <i data-lucide="building-2" class="icon"></i> Premier University — Bangladesh
+                </p>
+                <p class="mt-1 text-sm text-slate-300">B.Sc. Computer Science & Engineering</p>
+                <p class="mt-3 text-xs text-slate-400 inline-flex items-center gap-2">
+                  <i data-lucide="layers-3" class="icon"></i> Foundation: Software • Databases • Web • ML
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Experience -->
+      <section id="experience" class="mt-10 md:mt-14">
+        <div class="rounded-3xl border border-white/10 bg-white/6 glass shadow-glow noise relative overflow-hidden p-6 md:p-8">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl border border-white/10 bg-white/8 glass grid place-items-center">
+                <i data-lucide="briefcase" class="icon-lg"></i>
+              </div>
+              <div>
+                <h2 class="text-xl md:text-2xl font-semibold tracking-tight">Experience</h2>
+                <p class="mt-1 text-sm text-slate-300">Roles and leadership — quick to scan.</p>
+              </div>
+            </div>
+
+            <button id="copyExperienceBtn" class="px-4 py-2.5 rounded-2xl border border-white/10 bg-white/8 hover:bg-white/12 glass transition text-sm font-semibold inline-flex items-center gap-2">
+              <i data-lucide="clipboard-copy" class="icon"></i><span>Copy Experience</span>
+            </button>
+          </div>
+
+          <div class="mt-6 grid gap-4">
+            <div class="expItem rounded-2xl border border-white/10 bg-white/5 p-5 relative overflow-hidden">
+              <div class="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-cyan-400/14 blur-2xl"></div>
+              <div class="relative">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <p class="text-sm font-semibold inline-flex items-center gap-2">
+                    <i data-lucide="building" class="icon"></i> Terms Brain — Software Developer (Full-time)
+                  </p>
+                  <p class="text-xs text-slate-400 inline-flex items-center gap-2">
+                    <i data-lucide="calendar" class="icon"></i> Oct 2022 – Present • Chattogram, Bangladesh (Hybrid)
+                  </p>
+                </div>
+                <p class="mt-2 text-sm text-slate-300 inline-flex items-center gap-2">
+                  <i data-lucide="wrench" class="icon"></i> Software Design • Web Engineering • APIs • System Development
+                </p>
+              </div>
+            </div>
+
+            <div class="expItem rounded-2xl border border-white/10 bg-white/5 p-5 relative overflow-hidden">
+              <div class="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-fuchsia-400/12 blur-2xl"></div>
+              <div class="relative">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <p class="text-sm font-semibold inline-flex items-center gap-2">
+                    <i data-lucide="crown" class="icon"></i> Terms Brain — Co-Founder
+                  </p>
+                  <p class="text-xs text-slate-400 inline-flex items-center gap-2">
+                    <i data-lucide="calendar" class="icon"></i> Sep 2023 – Present
+                  </p>
+                </div>
+                <p class="mt-2 text-sm text-slate-300 inline-flex items-center gap-2">
+                  <i data-lucide="route" class="icon"></i> Team direction • Delivery • Product decisions
+                </p>
+              </div>
+            </div>
+
+            <div class="expItem rounded-2xl border border-white/10 bg-white/5 p-5 relative overflow-hidden">
+              <div class="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-amber-300/10 blur-2xl"></div>
+              <div class="relative">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <p class="text-sm font-semibold inline-flex items-center gap-2">
+                    <i data-lucide="badge-check" class="icon"></i> Top5Way — Software Developer
+                  </p>
+                  <p class="text-xs text-slate-400 inline-flex items-center gap-2">
+                    <i data-lucide="calendar" class="icon"></i> Apr 2022 – Jul 2024 • Chattogram, Bangladesh (Hybrid)
+                  </p>
+                </div>
+                <p class="mt-2 text-sm text-slate-300 inline-flex items-center gap-2">
+                  <i data-lucide="code-2" class="icon"></i> PHP • Laravel • APIs • Web Systems
+                </p>
+              </div>
+            </div>
+
+            <div class="expItem rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <p class="text-sm font-semibold inline-flex items-center gap-2">
+                  <i data-lucide="megaphone" class="icon"></i> Top5Way — Marketing Strategist
+                </p>
+                <p class="text-xs text-slate-400 inline-flex items-center gap-2">
+                  <i data-lucide="calendar" class="icon"></i> Mar 2021 – Apr 2022
+                </p>
+              </div>
+              <p class="mt-2 text-sm text-slate-300 inline-flex items-center gap-2">
+                <i data-lucide="bar-chart-3" class="icon"></i> Data analysis • Analytics • Growth tasks
+              </p>
+            </div>
+
+            <div class="expItem rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <p class="text-sm font-semibold inline-flex items-center gap-2">
+                  <i data-lucide="users" class="icon"></i> ICT School — Technical Team Member
+                </p>
+                <p class="text-xs text-slate-400 inline-flex items-center gap-2">
+                  <i data-lucide="calendar" class="icon"></i> Oct 2018 – Feb 2021
+                </p>
+              </div>
+              <p class="mt-2 text-sm text-slate-300 inline-flex items-center gap-2">
+                <i data-lucide="puzzle" class="icon"></i> Problem-solving • Data analytics • Technical support
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Skills -->
+      <section id="skills" class="mt-10 md:mt-14">
+        <div class="rounded-3xl border border-white/10 bg-white/6 glass shadow-glow noise relative overflow-hidden p-6 md:p-8">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl border border-white/10 bg-white/8 glass grid place-items-center">
+                <i data-lucide="sparkles" class="icon-lg"></i>
+              </div>
+              <div>
+                <h2 class="text-xl md:text-2xl font-semibold tracking-tight">Technical Skills</h2>
+                <p class="mt-1 text-sm text-slate-300">Icons for every language, tool, and workflow item.</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 inline-flex items-center gap-2">
+                <i data-lucide="search" class="icon"></i> Search:
+              </span>
+              <input
+                id="skillSearch"
+                type="text"
+                placeholder="Type: laravel, python, api..."
+                class="w-full md:w-72 px-3 py-2 rounded-2xl border border-white/10 bg-slate-950/40 text-sm outline-none focus:ring-2 focus:ring-cyan-300/40"
+              />
+            </div>
+          </div>
+
+          <div id="skillsGrid" class="mt-6 grid md:grid-cols-2 gap-4"></div>
+
+          <div class="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p class="text-xs text-slate-400 inline-flex items-center gap-2">
+              <i data-lucide="mouse-pointer-click" class="icon"></i> Tip
+            </p>
+            <p class="text-sm text-slate-300">Click any skill chip to copy it.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Projects -->
+      <section id="projects" class="mt-10 md:mt-14 pb-16">
+        <div class="rounded-3xl border border-white/10 bg-white/6 glass shadow-glow noise relative overflow-hidden p-6 md:p-8">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl border border-white/10 bg-white/8 glass grid place-items-center">
+                <i data-lucide="layers" class="icon-lg"></i>
+              </div>
+              <div>
+                <h2 class="text-xl md:text-2xl font-semibold tracking-tight">Projects</h2>
+                <p class="mt-1 text-sm text-slate-300">Your real projects (AI + Web Systems). Filter + click.</p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <button class="filterBtn px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm transition inline-flex items-center gap-2" data-filter="all">
+                <i data-lucide="grid-2x2" class="icon"></i><span>All</span>
+              </button>
+              <button class="filterBtn px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm transition inline-flex items-center gap-2" data-filter="ai">
+                <i data-lucide="brain" class="icon"></i><span>AI / ML</span>
+              </button>
+              <button class="filterBtn px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm transition inline-flex items-center gap-2" data-filter="web">
+                <i data-lucide="globe" class="icon"></i><span>Web Systems</span>
+              </button>
+              <button class="filterBtn px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm transition inline-flex items-center gap-2" data-filter="db">
+                <i data-lucide="database" class="icon"></i><span>DB / Admin</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="projectGrid" class="mt-6 grid md:grid-cols-3 gap-4"></div>
+
+          <footer class="mt-10 text-center text-xs text-slate-500">
+            <p>© <span id="year"></span> Tonmoy Barua • Built with HTML + Tailwind </p>
+          </footer>
+        </div>
+      </section>
+    </main>
+
+    <!-- Project Modal -->
+    <div id="modal" class="fixed inset-0 z-[100] hidden">
+      <div id="modalBackdrop" class="absolute inset-0 bg-black/60"></div>
+      <div class="absolute inset-0 p-4 grid place-items-center">
+        <div class="w-full max-w-2xl rounded-3xl border border-white/10 bg-slate-950/80 glass shadow-glow noise relative overflow-hidden">
+          <div class="p-5 md:p-6 border-b border-white/10 flex items-start justify-between gap-4">
+            <div class="min-w-0">
+              <p id="modalTag" class="text-xs text-slate-400"></p>
+              <h3 id="modalTitle" class="text-lg md:text-xl font-semibold truncate"></h3>
+              <p id="modalMeta" class="mt-1 text-xs text-slate-400"></p>
+            </div>
+            <button id="modalClose" class="w-10 h-10 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition grid place-items-center" aria-label="Close">
+              <i data-lucide="x" class="icon-lg"></i>
+            </button>
+          </div>
+
+          <div class="p-5 md:p-6 grid gap-4">
+            <p id="modalDesc" class="text-sm text-slate-300 leading-relaxed"></p>
+
+            <div>
+              <p class="text-sm font-semibold inline-flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="icon"></i> Highlights
+              </p>
+              <ul id="modalBullets" class="mt-2 text-sm text-slate-300 list-disc pl-5 space-y-1"></ul>
+            </div>
+
+            <div>
+              <p class="text-sm font-semibold inline-flex items-center gap-2">
+                <i data-lucide="wrench" class="icon"></i> Tech Stack
+              </p>
+              <div id="modalSkills" class="mt-2 flex flex-wrap gap-2"></div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <a id="modalLink" href="#" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/14 border border-white/10 transition">
+                <i data-lucide="external-link" class="icon"></i>
+                <span class="text-sm font-semibold">View link</span>
+              </a>
+              <button id="modalCopyBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/14 border border-white/10 transition">
+                <i data-lucide="copy" class="icon"></i>
+                <span class="text-sm font-semibold">Copy summary</span>
+              </button>
+              <span id="modalToast" class="text-xs text-slate-400"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ==========================
+      // CONFIG (edit these)
+      // ==========================
+      const CONFIG = {
+        email: "tonmoy.cse.ctg@outlook.com", // <-- change to your email
+      };
+
+      // ==========================
+      // ICON MAP (for skills)
+      // ==========================
+      const SKILL_ICON = {
+        // Languages
+        "Python": "terminal",
+        "C": "code-2",
+        "C++": "code-2",
+        "Java": "code-2",
+
+        // Web Dev
+        "Laravel": "layers",
+        "PHP": "code-2",
+        "JavaScript": "braces",
+        "AJAX": "repeat",
+        "jQuery": "zap",
+        "Vue JS": "triangle",
+        "MySQL": "database",
+        "REST APIs": "plug",
+        "API Development": "plug",
+        "Bootstrap (Framework)": "layout-template",
+        "Payment Gateways": "credit-card",
+        "Shopping Cart": "shopping-cart",
+        "SMS Gateway": "message-square-text",
+
+        // AI/ML
+        "scikit-learn": "brain",
+        "TensorFlow": "cpu",
+        "PyTorch": "cpu",
+        "Hugging Face": "bot",
+        "OpenCV": "scan-eye",
+        "Machine Learning": "brain",
+        "Natural Language Processing": "text",
+        "Data Science": "bar-chart-3",
+        "Convolutional Neural Network": "aperture",
+        "Artificial Neural Network": "network",
+        "BERT": "text-cursor-input",
+
+        // Data tools
+        "pandas": "table-2",
+        "NumPy": "sigma",
+        "Power BI": "pie-chart",
+        "Matplotlib": "line-chart",
+        "Seaborn": "line-chart",
+
+        // Workflow
+        "Git": "git-branch",
+        "GitHub": "github",
+        "Agile": "workflow",
+        "Version Control": "git-branch",
+      };
+
+      const SKILL_SECTIONS = [
+        {
+          title: "Languages",
+          icon: "code-2",
+          items: ["Python", "C", "C++", "Java"],
+        },
+        {
+          title: "Web Development",
+          icon: "globe",
+          items: ["Laravel", "PHP", "JavaScript", "jQuery", "AJAX", "Vue JS", "MySQL", "REST APIs", "API Development", "Bootstrap (Framework)", "Payment Gateways", "Shopping Cart", "SMS Gateway"],
+        },
+        {
+          title: "AI & ML Tools",
+          icon: "brain",
+          items: ["scikit-learn", "TensorFlow", "PyTorch", "Hugging Face", "OpenCV", "Machine Learning", "Natural Language Processing", "Data Science", "Convolutional Neural Network", "Artificial Neural Network", "BERT"],
+        },
+        {
+          title: "Data Tools",
+          icon: "bar-chart-3",
+          items: ["pandas", "NumPy", "Power BI", "Matplotlib", "Seaborn"],
+        },
+        {
+          title: "Version Control & Workflow",
+          icon: "git-branch",
+          items: ["Git", "GitHub", "Agile", "REST APIs"],
+        },
+      ];
+
+      // ==========================
+      // PROJECTS (your list)
+      // ==========================
+      const PROJECTS = [
+        // TOP (as you requested)
+        {
+          id: "ai1",
+          title: "Named Entity Recognition & Relation Extraction on Biomedical Data",
+          tag: "ai",
+          badge: "AI / NLP",
+          meta: "09/2023",
+          desc:
+            "Introduced a new dataset for NER and RE using sequence-to-sequence text annotation based on the NHP disease & conditions archive. Achieved NER accuracy 85% and RE accuracy 87%.",
+          bullets: [
+            "Sequence-to-sequence text annotation for biomedical entities",
+            "NER accuracy: 85% | RE accuracy: 87%",
+            "Dataset built to act as ground-truth for diseases & conditions",
+          ],
+          skills: ["Convolutional Neural Network", "Data Science", "Machine Learning", "Natural Language Processing"],
+          link: "#",
+        },
+        {
+          id: "ai2",
+          title: "Emotion Detection using NLP and ANN",
+          tag: "ai",
+          badge: "AI / NLP",
+          meta: "02/2022",
+          desc:
+            "Artificial Neural Network project to classify 6 emotions from social media comments/reviews. Achieved 83% classification accuracy.",
+          bullets: [
+            "6 emotion classes from text data",
+            "ANN-based classifier with NLP pipeline",
+            "Classification accuracy: 83%",
+          ],
+          skills: ["Artificial Neural Network", "BERT", "Machine Learning", "Python"],
+          link: "#",
+        },
+        {
+          id: "ai3",
+          title: "University Enrollment System (Vue JS)",
+          tag: "web",
+          badge: "Web App",
+          meta: "04/2021",
+          desc:
+            "A university website to let students complete enrollment and allow teachers to assign marks through a dynamic distribution form.",
+          bullets: [
+            "Dynamic enrollment workflow",
+            "Teacher mark distribution form",
+            "Results calculated and managed through admin controls",
+          ],
+          skills: ["Vue JS"],
+          link: "#",
+        },
+
+        // Terms Brain / client projects
+        {
+          id: "web1",
+          title: "Hotel Booking System — Seapark Hotel Cox’s Bazar",
+          tag: "web",
+          badge: "Web System",
+          meta: "Dec 2024 – Feb 2025 • Associated with Terms Brain",
+          desc:
+            "Client project for Seapark Hotel Cox’s Bazar. System supports CRUD for bookings, rooms, and managers; income/expense reporting; room availability during booking; and SMS messaging via API. Two-panel system: Admin & Manager.",
+          bullets: [
+            "CRUD: bookings, rooms, managers",
+            "Income/expense reporting + availability view",
+            "SMS messaging integration via API",
+            "Role-based panels: Admin & Manager",
+          ],
+          skills: ["PHP", "JavaScript", "AJAX", "jQuery", "API Development", "SMS Gateway", "Bootstrap (Framework)", "MySQL"],
+          link: "#",
+        },
+        {
+          id: "web2",
+          title: "Abusalim — E-Commerce Platform (Laravel 11)",
+          tag: "web",
+          badge: "E-Commerce",
+          meta: "Sep 2024 – Dec 2024 • Associated with Terms Brain",
+          desc:
+            "E-commerce platform selling Yemeni products in the Netherlands. Built with Laravel 11. Includes payment gateway integrations (e.g., iDeal), DHL API plugin, location verification across NL, dynamic search and price-range filtering.",
+          bullets: [
+            "Laravel 11 full-stack e-commerce build",
+            "Payment gateway integrations + checkout flow",
+            "DHL API plugin + location verification",
+            "Dynamic search + price-range filtering",
+          ],
+          skills: ["Laravel", "PHP", "JavaScript", "AJAX", "MySQL", "API Development", "Bootstrap (Framework)", "Payment Gateways", "Shopping Cart"],
+          link: "#",
+        },
+        {
+          id: "web3",
+          title: "Complete Turf Booking Management System",
+          tag: "db",
+          badge: "Admin System",
+          meta: "Feb 2024 – May 2024 • Associated with Terms Brain",
+          desc:
+            "A complete system for turf management companies to manage bookings, earnings, expenses, staff, and operations. Built with PHP + advanced JavaScript + AJAX. Two user types: Admin & Manager.",
+          bullets: [
+            "Bookings + earnings/expenses tracking",
+            "Staff & operations management modules",
+            "Two user roles: Admin & Manager",
+            "Dynamic admin dashboards",
+          ],
+          // NOTE: user posted credentials; intentionally omitted for safety.
+          skills: ["PHP", "JavaScript", "AJAX", "API Development", "Bootstrap (Framework)", "MySQL"],
+          link: "#",
+        },
+        {
+          id: "web4",
+          title: "Mohammad York Burger — Online Order Management",
+          tag: "web",
+          badge: "Web System",
+          meta: "Jan 2024 – Apr 2024 • Associated with Terms Brain",
+          desc:
+            "Online ordering website for a Canadian burger & pizza shop. Fully dynamic menu, add-ons/extras system, admin panel management, and payment gateway integration.",
+          bullets: [
+            "Dynamic menu + add-ons/extras per item",
+            "Admin-controlled items and options",
+            "Online ordering and payment gateway integration",
+          ],
+          skills: ["PHP", "JavaScript", "AJAX", "jQuery", "API Development", "Payment Gateways", "Bootstrap (Framework)"],
+          link: "#",
+        },
+
+        // University projects
+        {
+          id: "uni1",
+          title: "University Enrolment System",
+          tag: "db",
+          badge: "University",
+          meta: "May 2020 – Oct 2020 • Associated with Premier University",
+          desc:
+            "University enrolment system with teacher mark distribution. Admin manages courses, teachers, sections, sessions. Teachers set mark distribution; results are calculated accordingly.",
+          bullets: [
+            "Admin: courses, teachers, sections, sessions",
+            "Teacher: mark distribution workflow",
+            "Automated result calculation",
+          ],
+          skills: ["AJAX", "PHP", "jQuery"],
+          link: "#",
+        },
+        {
+          id: "uni2",
+          title: "NOS Car Selling Application",
+          tag: "db",
+          badge: "DB Project",
+          meta: "Aug 2019 – Nov 2019 • Associated with Premier University",
+          desc:
+            "First Database Management project built using PHP.",
+          bullets: [
+            "Database-driven CRUD foundations",
+            "PHP-based application workflow",
+          ],
+          skills: ["PHP", "MySQL"],
+          link: "#",
+        },
+      ];
+
+      // Helpers
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+      // Year
+      $("#year").textContent = new Date().getFullYear();
+
+      // Theme
+      function applyTheme() {
+        const saved = localStorage.getItem("theme");
+        if (saved === "light") document.documentElement.classList.remove("dark");
+        else document.documentElement.classList.add("dark");
+        $("#themeIcon").textContent = document.documentElement.classList.contains("dark") ? "🌙" : "☀️";
+      }
+    //   applyTheme();
+    //   $("#themeBtn").addEventListener("click", () => {
+    //     document.documentElement.classList.toggle("dark");
+    //     localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+    //     applyTheme();
+    //   });
+
+      // Mobile menu
+      $("#menuBtn").addEventListener("click", () => $("#mobileMenu").classList.toggle("hidden"));
+      $$("#mobileMenu a").forEach((a) => a.addEventListener("click", () => $("#mobileMenu").classList.add("hidden")));
+
+      // Scroll progress + toTop
+      function onScroll() {
+        const doc = document.documentElement;
+        const ratio = (doc.scrollHeight - doc.clientHeight) ? doc.scrollTop / (doc.scrollHeight - doc.clientHeight) : 0;
+        $("#progress").style.width = `${Math.round(ratio * 100)}%`;
+        if (doc.scrollTop > 700) $("#toTopBtn").classList.remove("hidden");
+        else $("#toTopBtn").classList.add("hidden");
+      }
+      window.addEventListener("scroll", onScroll);
+      $("#toTopBtn").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+      onScroll();
+
+      // Copy email
+      $("#copyEmailBtn").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(CONFIG.email);
+          $("#copyEmailText").textContent = "Copied!";
+          setTimeout(() => ($("#copyEmailText").textContent = "Copy email"), 1200);
+        } catch {
+          $("#copyEmailText").textContent = "Copy failed";
+          setTimeout(() => ($("#copyEmailText").textContent = "Copy email"), 1400);
+        }
+      });
+
+      // Copy experience
+      $("#copyExperienceBtn").addEventListener("click", async () => {
+        const items = $$(".expItem").map((el) => el.innerText.trim()).join("\n\n---\n\n");
+        try {
+          await navigator.clipboard.writeText(items);
+          $("#copyExperienceBtn").innerHTML = `<i data-lucide="check" class="icon"></i><span>Copied</span>`;
+          lucide.createIcons();
+          setTimeout(() => {
+            $("#copyExperienceBtn").innerHTML = `<i data-lucide="clipboard-copy" class="icon"></i><span>Copy Experience</span>`;
+            lucide.createIcons();
+          }, 1200);
+        } catch {}
+      });
+
+      // Active nav highlight
+      const sectionIds = ["education", "experience", "skills", "projects"];
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            $$(".navPill").forEach((a) => a.classList.remove("active-pill"));
+            const target = entry.target.getAttribute("id");
+            $$(`a.navPill[href="#${target}"]`).forEach((a) => a.classList.add("active-pill"));
+          }
+        });
+      }, { rootMargin: "-50% 0px -45% 0px", threshold: 0.01 });
+
+      sectionIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+
+      // ==========================
+      // SKILLS RENDER (with icons)
+      // ==========================
+      function iconForSkill(name) {
+        return SKILL_ICON[name] || "sparkle";
+      }
+
+      function chipHTML(skill) {
+        const icon = iconForSkill(skill);
+        return `
+          <button class="chip inline-flex items-center gap-2 px-3 py-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-slate-200"
+                  data-skill="${skill}">
+            <i data-lucide="${icon}" class="icon"></i>
+            <span>${skill}</span>
+          </button>
+        `;
+      }
+
+      function renderSkills(filter = "") {
+        const q = filter.trim().toLowerCase();
+        const wrap = $("#skillsGrid");
+        wrap.innerHTML = "";
+
+        const sections = SKILL_SECTIONS.map(sec => ({
+          ...sec,
+          items: sec.items.filter(s => s.toLowerCase().includes(q))
+        })).filter(sec => sec.items.length > 0);
+
+        if (!sections.length) {
+          wrap.innerHTML = `
+            <div class="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-5 text-slate-300">
+              No skills match that search.
+            </div>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
+        sections.forEach(sec => {
+          const card = document.createElement("div");
+          card.className = "rounded-2xl border border-white/10 bg-white/5 p-5 relative overflow-hidden";
+
+          card.innerHTML = `
+            <div class="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-white/5 blur-2xl"></div>
+            <div class="relative">
+              <div class="flex items-center justify-between gap-3">
+                <p class="text-sm font-semibold inline-flex items-center gap-2">
+                  <i data-lucide="${sec.icon}" class="icon"></i> ${sec.title}
+                </p>
+                <span class="text-xs text-slate-400 inline-flex items-center gap-2">
+                  <i data-lucide="hash" class="icon"></i> ${sec.items.length}
+                </span>
+              </div>
+              <div class="mt-4 flex flex-wrap gap-2">
+                ${sec.items.map(chipHTML).join("")}
+              </div>
+            </div>
+          `;
+
+          wrap.appendChild(card);
+        });
+
+        lucide.createIcons();
+
+        // click-to-copy
+        $$("#skillsGrid button[data-skill]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const text = btn.getAttribute("data-skill");
+            try {
+              await navigator.clipboard.writeText(text);
+              btn.classList.add("shine", "animate-shimmer");
+              setTimeout(() => btn.classList.remove("shine", "animate-shimmer"), 850);
+            } catch {}
+          });
+        });
+      }
+
+      $("#skillSearch").addEventListener("input", (e) => renderSkills(e.target.value));
+      renderSkills();
+
+      // ==========================
+      // PROJECTS RENDER
+      // ==========================
+      let currentFilter = "all";
+
+      function badgeIcon(tag) {
+        if (tag === "ai") return "brain";
+        if (tag === "web") return "globe";
+        if (tag === "db") return "database";
+        return "layers";
+      }
+
+      function softGlowClass(tag) {
+        if (tag === "ai") return "bg-fuchsia-400/14";
+        if (tag === "web") return "bg-cyan-400/14";
+        if (tag === "db") return "bg-amber-300/10";
+        return "bg-white/10";
+      }
+
+      function renderProjectSkills(skills) {
+        return skills.map(s => `
+          <span class="text-xs px-2 py-1 rounded-xl border border-white/10 bg-slate-950/30 text-slate-300 inline-flex items-center gap-2">
+            <i data-lucide="${iconForSkill(s)}" class="icon"></i>
+            <span>${s}</span>
+          </span>
+        `).join("");
+      }
+
+      function projectCard(p) {
+        const div = document.createElement("button");
+        div.className = "text-left rounded-3xl border border-white/10 bg-white/5 hover:bg-white/8 transition p-5 relative overflow-hidden";
+        div.dataset.tag = p.tag;
+
+        div.innerHTML = `
+          <div class="absolute -top-16 -right-16 w-40 h-40 rounded-full ${softGlowClass(p.tag)} blur-2xl"></div>
+          <div class="relative">
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-xs px-2 py-1 rounded-xl border border-white/10 bg-white/5 text-slate-300 inline-flex items-center gap-2">
+                <i data-lucide="${badgeIcon(p.tag)}" class="icon"></i>
+                ${p.badge}
+              </span>
+              <span class="text-xs text-slate-400 inline-flex items-center gap-2">
+                <i data-lucide="mouse-pointer-click" class="icon"></i> Click
+              </span>
+            </div>
+
+            <h3 class="mt-3 text-base font-semibold">${p.title}</h3>
+            <p class="mt-1 text-xs text-slate-400 inline-flex items-center gap-2">
+              <i data-lucide="calendar" class="icon"></i> ${p.meta}
+            </p>
+
+            <p class="mt-2 text-sm text-slate-300 leading-relaxed">${p.desc}</p>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              ${renderProjectSkills(p.skills.slice(0, 4))}
+            </div>
+          </div>
+        `;
+
+        div.addEventListener("click", () => openModal(p));
+        return div;
+      }
+
+      function renderProjects() {
+        const grid = $("#projectGrid");
+        grid.innerHTML = "";
+        PROJECTS
+          .filter(p => currentFilter === "all" || p.tag === currentFilter)
+          .forEach(p => grid.appendChild(projectCard(p)));
+        lucide.createIcons();
+      }
+
+      $$(".filterBtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          currentFilter = btn.dataset.filter;
+          $$(".filterBtn").forEach(b => b.classList.remove("bg-white/10"));
+          btn.classList.add("bg-white/10");
+          renderProjects();
+        });
+      });
+
+      renderProjects();
+
+      // ==========================
+      // MODAL
+      // ==========================
+      function openModal(p) {
+        $("#modalTag").textContent = `Category: ${p.badge}`;
+        $("#modalTitle").textContent = p.title;
+        $("#modalMeta").textContent = p.meta;
+        $("#modalDesc").textContent = p.desc;
+
+        const ul = $("#modalBullets");
+        ul.innerHTML = "";
+        p.bullets.forEach(b => {
+          const li = document.createElement("li");
+          li.textContent = b;
+          ul.appendChild(li);
+        });
+
+        const skillsWrap = $("#modalSkills");
+        skillsWrap.innerHTML = renderProjectSkills(p.skills);
+
+        const link = $("#modalLink");
+        link.href = p.link || "#";
+        link.style.opacity = (p.link && p.link !== "#") ? "1" : "0.7";
+        link.title = (p.link && p.link !== "#") ? "Open link" : "Add a real project link in PROJECTS data";
+
+        $("#modalToast").textContent = "";
+        $("#modal").classList.remove("hidden");
+        $("#modal").classList.add("animate-pop");
+        lucide.createIcons();
+      }
+
+      function closeModal() { $("#modal").classList.add("hidden"); }
+      $("#modalClose").addEventListener("click", closeModal);
+      $("#modalBackdrop").addEventListener("click", closeModal);
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+      $("#modalCopyBtn").addEventListener("click", async () => {
+        const summary =
+          `${$("#modalTitle").textContent}\n${$("#modalMeta").textContent}\n\n` +
+          `${$("#modalDesc").textContent}\n\nHighlights:\n- ` +
+          Array.from($("#modalBullets").children).map(li => li.textContent).join("\n- ") +
+          `\n\nTech:\n- ` +
+          Array.from($("#modalSkills").children).map(ch => ch.innerText.trim()).join("\n- ");
+
+        try {
+          await navigator.clipboard.writeText(summary);
+          $("#modalToast").textContent = "Copied summary!";
+          setTimeout(() => ($("#modalToast").textContent = ""), 1200);
+        } catch {
+          $("#modalToast").textContent = "Copy failed";
+          setTimeout(() => ($("#modalToast").textContent = ""), 1200);
+        }
+      });
+
+      // Initial icons
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
